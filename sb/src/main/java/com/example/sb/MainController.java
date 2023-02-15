@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class MainController {
 	
-	@GetMapping("/sb")
+	@GetMapping("/")
 	public String index() {
-		return "test";
+		return "redirect:/question/list";
 	}
 
 }
