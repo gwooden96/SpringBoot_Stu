@@ -15,13 +15,7 @@ class SbApplicationTests {
 	@Test
 	void contextLoads() {
 		
-		for(int i=1; i<=300; i++) {
-			String subject = "테스트 제목" + i;
-			String content = "테스트 내용" + i;
-			
-			questionService.create(subject, content);
-			
-		}
+
 		
 		
 	}

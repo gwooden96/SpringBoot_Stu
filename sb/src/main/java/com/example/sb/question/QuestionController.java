@@ -1,6 +1,9 @@
 package com.example.sb.question;
 
+import java.security.Principal;
+
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -11,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.sb.answer.AnswerForm;
+import com.example.sb.user.SiteUser;
+import com.example.sb.user.UserService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class QuestionController {
 	
 	private final QuestionService questionService;
+	private final UserService userService;
 	
 	//question테이블에 전체레코드를 출력해주는 메서드
 //	@GetMapping("/list")
@@ -31,6 +37,8 @@ public class QuestionController {
 //		
 //		return "question_list";
 //	}
+	
+	/* 등록한 질문 리스트 페이지로 이동 */
 	@GetMapping("/list")
 	public String list(Model model, @RequestParam(value="page", defaultValue = "0") int page) {
 		
@@ -43,7 +51,7 @@ public class QuestionController {
 	}
 	
 	
-	
+	/* 질문 상세 보기 */
 	@GetMapping(value = "/detail/{id}")
 	public String detail(Model model, @PathVariable("id") Integer id, AnswerForm answerForm) {
 		
@@ -56,32 +64,75 @@ public class QuestionController {
 	}
 	
 	
-	
-	
+	/* 질문 등록 페이지 이동 */
+	@PreAuthorize("isAuthenticated()") //메서드가 호출되기전에 권한이 있는지 검사를 먼저한 후 그다음 진행
 	@GetMapping("/create")
 	public String questionCreate(QuestionForm questionForm) {
 		return "question_form";
 	}
 	
+	
+	/* 질문 등록 */
 	@PostMapping("/create")
-	 public String questionCreate(@Valid QuestionForm questionForm, BindingResult bindingResult) {
+	 public String questionCreate(@Valid QuestionForm questionForm, BindingResult bindingResult, Principal principal) {
+		
+		SiteUser siteUser = userService.getUser(principal.getName());
 	      
 	    if(bindingResult.hasErrors()) {
 	       return "question_form";
 	    }
 	      
 	    //입력한 질문제목과 내용을 Question 테이블에 추가 하는 코드
-	    questionService.create(questionForm.getSubject(), questionForm.getContent());
+	    questionService.create(questionForm.getSubject(), questionForm.getContent(), siteUser);
 	      
 	    return"redirect:/question/list";
 	 }
 	
 	
+	/* 수정 페이지로 이동 */
+	@GetMapping("/modify/{id}")
+	public String questionModify(QuestionForm questionForm, @PathVariable("id") Integer id) {
+		
+		Question question = questionService.getQuestion(id);
+		
+		questionForm.setSubject(question.getSubject());
+		questionForm.setContent(question.getContent());
+		
+		return "question_form";
+	}
+	
+	
+	/* 수정 기능 */
+	@PostMapping("/modify/{id}")
+	public String questionModify(@Valid QuestionForm questionForm, BindingResult bindingResult
+			, @PathVariable("id") Integer id) {
+		
+		Question question = questionService.getQuestion(id); //원본코드
+		
+		if(bindingResult.hasErrors()) {
+			return "question_form";
+		}
+		
+		//원본에서 제목과 내용만 수정해서 테이블에 update
+		questionService.modify(question, questionForm.getSubject(), questionForm.getContent());
+		
+		return "redirect:/question/detail/" + id;
+	}
 	
 	
 	
 	/* 삭제 기능 구현 중*/
-	
+	@GetMapping("/delete/{id}")
+	public String questionDelete(@PathVariable("id") Integer id ) {
+		
+		Question question = questionService.getQuestion(id);
+		
+		questionService.delete(question);
+		
+//		questionService.delete(id); QuestionService에서 deleteByid를 이용했을 경우 이 코드만으로도 가능하다
+		
+		return "redirect:/";
+	}
 	
 
 }

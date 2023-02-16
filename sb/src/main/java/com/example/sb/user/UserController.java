@@ -15,11 +15,15 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 	
 	private final UserService userService;
-
+	SiteUser siteUser = new SiteUser();
+	
+	
 	@GetMapping("/signup")
 	public String signup(UserForm userForm) {
 		return "signup_form";
 	}
+	
+	
 	
 	@PostMapping("signup")
 	public String signup(@Valid UserForm userForm, BindingResult bindingResult) {
@@ -34,11 +38,29 @@ public class UserController {
 			bindingResult.rejectValue("password2", "pwNotEquals", "패스워드가 다릅니다");
 			
 			return "signup_form";
-		}
+		} 
 		
-		userService.create(userForm.getUsername(), userForm.getEmail(), userForm.getPassword());
+		
+		try {
+			userService.create(userForm.getUsername(), userForm.getEmail(), userForm.getPassword());
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			
+			bindingResult.reject("signupFail", "이미 가입된 아이디입니다.");
+			return "signup_form";
+		}
 		
 		return "redirect:/";
 	}
+	
+	@GetMapping("/login")
+	public String login() {
+		return "login_form";
+	}
+	
+	
+	
 	
 }

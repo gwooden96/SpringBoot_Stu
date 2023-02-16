@@ -1,5 +1,7 @@
 package com.example.sb.user;
 
+import java.util.Optional;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,13 +24,20 @@ public class UserService {
 		
 		//비밀번호 암호화해주는 클래스
 //		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-		
-		
-		
+
 		user.setPassword(passwordEncoder.encode(password));
 		
 		userRepository.save(user);
 		
+		
+		return user;
+	}
+	
+	//username을 받아서 username에 해당 레코드를 뽑아와서 SiteUser형태인 객체로 리턴
+	public SiteUser getUser(String username) {
+		Optional<SiteUser> siteUser = userRepository.findByUsername(username);
+		
+		SiteUser user = siteUser.get();
 		
 		return user;
 	}
