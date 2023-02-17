@@ -6,6 +6,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,6 +48,46 @@ public class AnswerController {
 		answerService.create(question,  answerForm.getContent(), siteUser);
 		
 		return "redirect:/question/detail/" + id;
+	}
+	
+	//답변 내용 수정 페이지로 이동
+	@GetMapping("/modify/{id}")
+	public String answerModify(AnswerForm answerForm, @PathVariable("id") Integer id) {
+		
+		Answer answer = answerService.getAnswer(id);
+		
+		answerForm.setContent(answer.getContent());
+		
+		return "answer_form";
+	}
+	
+	//답변 내용 수정 기능
+	@PostMapping("/modify/{id}")
+	public String answerModify(@Valid AnswerForm answerForm, BindingResult bindingResult, @PathVariable("id") Integer id) {
+		
+		if(bindingResult.hasErrors()) {
+			return "answer_form";
+		}
+		
+		
+		
+		//id에 해당하는 내용을 입력한 내용으로 변경
+		Integer questionId = answerService.modify(id, answerForm.getContent());
+		
+		
+		return "redirect:/question/detail/" + questionId;
+	}
+	
+	
+	
+	//답변 삭제 기능
+	@GetMapping("/delete/{id}")
+	public String answerDelete(@PathVariable("id") Integer id) {
+		
+		Integer questionId = answerService.delete(id);
+		
+		return "redirect:/question/detail/" + questionId;
+		
 	}
 
 }

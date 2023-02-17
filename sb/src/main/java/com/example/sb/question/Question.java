@@ -41,7 +41,7 @@ public class Question {
 	private List<Answer> answerList;
 	
 	@ManyToOne
-	private SiteUser author;
+	private SiteUser author; //질문을 작성한 질문자 정보
 	
 	private LocalDateTime modifyDate;
 }
