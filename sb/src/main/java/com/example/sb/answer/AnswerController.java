@@ -90,4 +90,25 @@ public class AnswerController {
 		
 	}
 
+	
+	//추천 기능
+	@GetMapping("/vote/{id}")
+	public String answerVote(@PathVariable("id") Integer id, Principal principal) {
+		
+		//id에 해당하는 답변 정보를 빼옴
+		Answer answer = answerService.getAnswer(id);
+		//추천인 정보(로그인한 사람)를 빼옴
+		SiteUser siteUser = userService.getUser(principal.getName());
+		
+		//빼온 정보에서 voter에 추가
+		
+		//db에 수정된 내용 저장
+		Integer questionId = answerService.vote(answer, siteUser);
+		
+		return "redirect:/question/detail/" +questionId;
+		
+	}
+	
+	//추천삭제 기능
+	
 }

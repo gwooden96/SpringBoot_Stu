@@ -81,7 +81,7 @@ public class QuestionService {
 	
 	//삭제 메서드 (기능 구현중)
 	public void delete(Question question) {
-		//자바스크리브에서 요청을 날려서 직접 찾아서 삭제 처리
+		//자바스크립트에서 요청을 날려서 직접 찾아서 삭제 처리
 		questionRepository.delete(question);
 		
 	}
@@ -92,6 +92,22 @@ public class QuestionService {
 	 */
 //	public void delete(Integer id) {
 //		questionRepository.deleteById(id);
+//	}
+	
+	
+	//추천 기능 메서드
+	public void vote(Question question, SiteUser siteUser) {
+		
+		//question에 voter가져와서 siteuser 정보고 같이 추가로 넣어줌
+		question.getVoter().add(siteUser);
+		
+		questionRepository.save(question);
+	}
+	
+	
+	//추천 취소 메서드
+//	public void revote(Question question) {
+//		questionRepository.delete(question);
 //	}
 
 }

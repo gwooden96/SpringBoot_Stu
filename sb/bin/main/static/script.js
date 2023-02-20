@@ -14,3 +14,18 @@ btns.forEach(function(btn) {
 });
 
 
+const recommendBtns = document.querySelectorAll('.recommend');
+
+recommendBtns.forEach(function(btn) {
+	
+	btn.addEventListener('click', function() {
+		
+		if(confirm('추천하시겠습니까?')) {
+			location.href = this.dataset.uri;
+		}
+		
+	});
+	
+});
+
+

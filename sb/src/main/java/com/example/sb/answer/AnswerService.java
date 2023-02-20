@@ -46,7 +46,7 @@ public class AnswerService {
 		Answer answer = getAnswer(id);
 		
 		answer.setContent(content);
-		answer.setCreateDate(LocalDateTime.now());
+		answer.setModifyDate(LocalDateTime.now()); //update쿼리문이라 createDate인 생성날짜가 아닌 업데이트 날짜인 modifyDate로 해줘야 한다.
 		
 		answerRepository.save(answer);
 		
@@ -72,5 +72,22 @@ public class AnswerService {
 
 		return questionId;
 	}
+	
+	
+	//추천 기능 메서드
+	public Integer vote(Answer answer, SiteUser siteUser) {
+		//답변에 추천인 정보가 추가
+		answer.getVoter().add(siteUser);
+		
+		Integer questionId = answer.getQuestion().getId();
+				
+		//db에 저장
+		answerRepository.save(answer);
+		
+		return questionId;
+	}
+	
+	//추천 취소 메서드
+	
 	
 }

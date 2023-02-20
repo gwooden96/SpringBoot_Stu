@@ -134,5 +134,27 @@ public class QuestionController {
 		return "redirect:/";
 	}
 	
-
+	
+	/* 추천 기능 구현 */
+	@GetMapping("/vote/{id}")
+	public String questionVote(@PathVariable("id") Integer id, Principal principal) {
+		
+		//id에 해당하는 레코드에 voter컬럼부분에다가 추천자 정보를 넣어줌
+		
+		Question question = questionService.getQuestion(id);
+		SiteUser siteUser = userService.getUser(principal.getName());
+		
+		//question서비스에서 메서드 불러오기
+		questionService.vote(question, siteUser);
+		
+		
+		return "redirect:/question/detail/" + id;
+	}
+	
+	/* 추천 취소 기능 구현 */
+//	@GetMapping("/revote/{id}")
+//	public String questionReVote(@PathVariable("id") Integer id) {
+//		
+//		Question question = questionService.vote(id);
+//	}
 }
