@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.example.sb.CommonUtil;
 import com.example.sb.answer.AnswerForm;
 import com.example.sb.user.SiteUser;
 import com.example.sb.user.UserService;
@@ -28,6 +29,9 @@ public class QuestionController {
 	private final QuestionService questionService;
 	private final UserService userService;
 	
+	//bean으로 했을 경우 이런식으로 컨트롤러에서 처리
+//	private final CommonUtil commonUtil;
+	
 	//question테이블에 전체레코드를 출력해주는 메서드
 //	@GetMapping("/list")
 //	public String list(Model model) { //model은 자바스크립트로 따지면 이벤트같은 기능, request역할을 해줌
@@ -40,11 +44,13 @@ public class QuestionController {
 	
 	/* 등록한 질문 리스트 페이지로 이동 */
 	@GetMapping("/list")
-	public String list(Model model, @RequestParam(value="page", defaultValue = "0") int page) {
+	public String list(Model model, @RequestParam(value="page", defaultValue = "0") int page
+								, @RequestParam(value = "kw", defaultValue = "") String kw) {
 		
-		Page<Question> paging = questionService.getList(page);
+		Page<Question> paging = questionService.getList(page, kw);
 		
 		model.addAttribute("paging", paging);
+		model.addAttribute("kw", kw);
 		
 //		return "test";
 		return "question_list";
@@ -57,6 +63,10 @@ public class QuestionController {
 		
 		//id에 해당하는 레코드를 가져와야 함
 		Question q = questionService.getQuestion(id);
+		
+		//bean으로 했을 경우 이런식으로 컨트롤러에서 처리
+//		q.setContent(commonUtil.markdown(q.getContent()));
+		
 		//모델에 추가
 		model.addAttribute("question", q);
 		

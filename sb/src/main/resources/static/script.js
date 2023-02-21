@@ -29,3 +29,36 @@ recommendBtns.forEach(function(btn) {
 });
 
 
+
+const pageBtns = document.querySelectorAll('.page-link');
+const searchBtn = document.querySelector('#btn_search');
+
+/*let page = document.querySelector('#page');
+let searchForm = document.querySelector('#searchForm');
+let kw = document.querySelector('#kw');
+let search_kw = document.querySelector('#search_kw');*/
+
+
+pageBtns.forEach(function(btn) {
+	
+	btn.addEventListener('click', function() {
+	
+		document.querySelector('#page').value = this.dataset.page;
+		document.querySelector('#searchForm').submit();
+		
+		});
+		
+	
+});
+
+
+	searchBtn.addEventListener('click', function() {
+	
+		document.querySelector('#kw').value = document.querySelector('#search_kw').value;
+		document.querySelector('#page').value = 0;
+		document.querySelector('#searchForm').submit();
+	
+		});
+
+
+

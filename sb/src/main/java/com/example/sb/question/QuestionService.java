@@ -9,11 +9,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.example.sb.DataNotFoundException;
+import com.example.sb.answer.Answer;
 import com.example.sb.user.SiteUser;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -27,8 +35,11 @@ public class QuestionService {
 //		return questionRepository.findAll();
 //	}
 	
+	
+	
+	
 	//question테이블에 레코드를 페이지별로 가져오는 메서드
-	public Page<Question> getList(int page) {
+	public Page<Question> getList(int page, String kw) {
 		
 		List<Sort.Order> sort = new ArrayList<>();
 		
@@ -37,8 +48,15 @@ public class QuestionService {
 		
 		Pageable pageable = PageRequest.of(page, 10, Sort.by(sort));
 		
-		return questionRepository.findAll(pageable);
+		Specification<Question> spec = search(kw);
+		
+		
+		return questionRepository.findAll(spec, pageable);
 	}
+	
+	
+	
+	
 	
 	//question테이블에서 전달받은 id에 해당하는 레코드를 가져오는 메서드
 	public Question getQuestion(Integer id) {
@@ -109,5 +127,32 @@ public class QuestionService {
 //	public void revote(Question question) {
 //		questionRepository.delete(question);
 //	}
+	
+	
+	
+	private Specification<Question> search(String kw) {
+		return new Specification<Question>() {
+
+			@Override
+			public Predicate toPredicate(Root<Question> q, CriteriaQuery<?> query, CriteriaBuilder cb) {
+
+				//JPA를 이용한 쿼리 구축
+					query.distinct(true); //중복제거
+					Join<Question, SiteUser> u1 = q.join("author", JoinType.LEFT);
+					Join<Question, Answer> a = q.join("answerList", JoinType.LEFT);
+					Join<Answer, SiteUser> u2 = q.join("author", JoinType.LEFT);
+				
+					//or를 이용해 아래 5가지 중에 하나라도 만족하면 true
+				return cb.or(cb.like(q.get("subject"), "%" + kw + "%"),
+							cb.like(q.get("content"), "%" + kw + "%"),
+							cb.like(u1.get("username"), "%" + kw + "%"),
+							cb.like(a.get("content"), "%" + kw + "%"),
+							cb.like(u2.get("username"), "%" + kw + "%")
+						
+						);
+			}
+			
+		};
+	}
 
 }

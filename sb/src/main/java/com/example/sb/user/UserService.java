@@ -14,6 +14,7 @@ public class UserService {
 	//bean 객체 불러와서 사용
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
+
 	
 	public SiteUser create(String username, String email, String password) {
 		
@@ -37,9 +38,12 @@ public class UserService {
 	public SiteUser getUser(String username) {
 		Optional<SiteUser> siteUser = userRepository.findByUsername(username);
 		
-		SiteUser user = siteUser.get();
+		if(siteUser.isPresent()) {
+			return siteUser.get(); //존재하면 존재하는 user 정보를 리턴
+		} else {
+			return new SiteUser(); //없으면 빈 객체를 리턴
+		}
 		
-		return user;
 	}
 	
 }

@@ -1,6 +1,18 @@
 <html layout:decorate="~{layout}">
 
 <div layout:fragment="content" class="container my-3">
+	
+	<div class="my-3 col-6">
+		<div class="input-group">
+			<input class="form-control" id="search_kw" type="text" th:value="${kw}">
+			<button class="btn btn-outline-secondary" id="btn_search">검색</button>
+		</div>
+	</div>
+	
+	<form th:action="@{/question/list}" method="get" id="searchForm">
+		<input type="text" name="kw" th:value="${kw}" id="kw">
+		<input type="text" name="page" th:value="${paging.number}" id="page">
+	</form>
 
 	<table class="table">
 		<thead class="table-dark">
@@ -40,7 +52,7 @@
 				</a>
 			</li>
 			<li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
-				<a class="page-link" th:href="@{|?page=${paging.number-1}|}" >
+				<a class="page-link" href="javascript:void(0)" th:data-page="${paging.number-1}" >
 					<span>이전</span>
 				</a>
 			</li>
@@ -48,11 +60,11 @@
 			<li class="page-item" th:each="page : ${#numbers.sequence(0, paging.totalPages-1)}"
 				th:classappend="${page == paging.number} ? 'active'"
 				th:if="${page >= paging.number-2 and page <= paging.number+2}">
-				<a class="page-link" th:text="${page+1}" th:href="@{|?page=${page}|}"></a>
+				<a class="page-link" th:text="${page+1}" href="javascript:void(0)" th:data-page="${page}"></a>
 			</li>
 			
 			<li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
-				<a class="page-link" th:href="@{|?page=${paging.number+1}|}">
+				<a class="page-link" href="javascript:void(0)" th:data-page="${paging.number+1}">
 					<span>다음</span>
 				</a>
 			</li>
